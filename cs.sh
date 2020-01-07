@@ -108,7 +108,7 @@ pihole -f
     green " Youtube：米月"
     green " 电报群：https://t.me/mi_yue"
     green " Youtube频道地址：https://www.youtube.com/channel/UCr4HCEgaZ0cN5_7tLHS_xAg"
-	green " SmartPi后台地址：http://loc_ip/admin"
+	green " SmartPi后台地址：http://$loc_ip/admin"
 	green " ===========================请重启debian系统=============================="
 
 }
