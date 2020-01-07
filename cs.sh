@@ -20,31 +20,11 @@ byellow(){
     echo -e "\033[33m\033[01m\033[05m$1\033[0m"
 }
 
-architecture=""
-case $(uname -m) in
-    x86_64)  architecture="amd64" ;;
-    aarch64)  architecture="arm64" ;;
-esac
-
 
 function install_smartpi(){
 
-if [[ $architecture = "amd64" ]]; then
-cp /etc/apt/sources.list /etc/apt/sources.list.bak
-rm -rf /etc/apt/sources.list
-
-cat > /etc/apt/sources.list << EOF
-deb http://mirrors.163.com/debian buster main
-deb-src http://mirrors.163.com/debian buster main
-deb http://mirrors.163.com/debian-security/ buster/updates main
-deb-src http://mirrors.163.com/debian-security/ buster/updates main
-deb http://mirrors.163.com/debian buster-updates main
-deb-src http://mirrors.163.com/debian buster-updates main
-EOF
-fi
-
-apt-get -y update
 apt install --no-install-recommends --no-install-suggests -y git net-tools curl
+
 wget https://github.com/pymumu/smartdns/releases/download/Release28/smartdns.1.2019.12.15-1028.x86_64-linux-all.tar.gz
 tar zxf smartdns.1.2019.12.15-1028.x86_64-linux-all.tar.gz
 cd smartdns
@@ -108,7 +88,6 @@ DNS_BOGUS_PRIV=true
 DNSSEC=false
 CONDITIONAL_FORWARDING=false
 EOF
-
 
 git clone --depth 1 https://github.com/pi-hole/pi-hole.git Pi-hole
 bash ~/Pi-hole/"automated install"/basic-install.sh /dev/stdin --unattended
