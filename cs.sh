@@ -22,8 +22,9 @@ byellow(){
 
 
 function install_smartpi(){
-
+apt update && apt upgrade -y
 apt install --no-install-recommends --no-install-suggests -y git net-tools curl
+source /etc/profile
 
 wget https://github.com/pymumu/smartdns/releases/download/Release28/smartdns.1.2019.12.15-1028.x86_64-linux-all.tar.gz
 tar zxf smartdns.1.2019.12.15-1028.x86_64-linux-all.tar.gz
@@ -166,6 +167,7 @@ start_menu(){
     green " Youtube：米月"
     green " 电报群：https://t.me/mi_yue"
     green " Youtube频道地址：https://www.youtube.com/channel/UCr4HCEgaZ0cN5_7tLHS_xAg"
+	green " SmartPi版本：20200107v1"
     green " ========================================================================"
     echo
     green  " 1. 一键安装SmartPi"
