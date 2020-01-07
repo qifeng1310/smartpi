@@ -102,6 +102,10 @@ systemctl daemon-reload > /dev/null 2>&1
 systemctl restart pihole-FTL
 pihole -f
 
+cat > cat /etc/resolvconf/resolv.conf.d/base << EOF
+nameserver 114.114.114.114
+EOF
+
 	green " ===========================请重启debian系统=============================="
 	green " SmartPi安装完成"
     green " 系统：>=debian9"
@@ -169,7 +173,7 @@ start_menu(){
     green " Youtube：米月"
     green " 电报群：https://t.me/mi_yue"
     green " Youtube频道地址：https://www.youtube.com/channel/UCr4HCEgaZ0cN5_7tLHS_xAg"
-	green " SmartPi版本：20200107v2"
+	green " SmartPi版本：20200107v3"
     green " ========================================================================"
     echo
     green  " 1. 一键安装SmartPi"
