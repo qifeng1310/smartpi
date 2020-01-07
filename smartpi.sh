@@ -20,31 +20,21 @@ byellow(){
     echo -e "\033[33m\033[01m\033[05m$1\033[0m"
 }
 
-architecture=""
-case $(uname -m) in
-    x86_64)  architecture="amd64" ;;
-    aarch64)  architecture="arm64" ;;
-esac
-
 
 function install_smartpi(){
 
-if [[ $architecture = "amd64" ]]; then
-cp /etc/apt/sources.list /etc/apt/sources.list.bak
-rm -rf /etc/apt/sources.list
-
-cat > /etc/apt/sources.list << EOF
-deb http://mirrors.163.com/debian buster main
-deb-src http://mirrors.163.com/debian buster main
-deb http://mirrors.163.com/debian-security/ buster/updates main
-deb-src http://mirrors.163.com/debian-security/ buster/updates main
-deb http://mirrors.163.com/debian buster-updates main
-deb-src http://mirrors.163.com/debian buster-updates main
+rm -rf /etc/resolv.conf
+cat > /etc/resolv.conf << EOF
+nameserver 119.29.29.29
+nameserver 223.5.5.5
+nameserver 119.28.28.28
+nameserver 223.6.6.6
 EOF
-fi
 
-apt-get -y update
-apt -y install curl
+apt update && apt upgrade -y
+apt install --no-install-recommends --no-install-suggests -y git net-tools curl resolvconf
+source /etc/profile
+
 wget https://github.com/pymumu/smartdns/releases/download/Release28/smartdns.1.2019.12.15-1028.x86_64-linux-all.tar.gz
 tar zxf smartdns.1.2019.12.15-1028.x86_64-linux-all.tar.gz
 cd smartdns
@@ -80,32 +70,58 @@ EOF
 
 cp /etc/smartdns/smartdns.conf /etc/smartdns/smartdns.conf.bak
 
-systemctl enable smartdns
-systemctl start smartdns
+systemctl enable smartdns > /dev/null 2>&1
+systemctl restart smartdns > /dev/null 2>&1
 
-curl -sSL https://install.pi-hole.net | bash
+mkdir /etc/pihole/
 
-sed -i '/PIHOLE_DNS/d' /etc/pihole/setupVars.conf
-sed -i '$a PIHOLE_DNS_1=127.0.0.1#5599' /etc/pihole/setupVars.conf
-sed -i '/DNSMASQ_LISTENING/d' /etc/pihole/setupVars.conf
-sed -i '$a DNSMASQ_LISTENING=local' /etc/pihole/setupVars.conf
+pi_wd="4739aedfec7b085af55a29976725a386ad39c9d88f1228c6cffe4ee52971b206"
 
-rm -rf /etc/resolv.conf
+lan_n=$(ip --oneline link show up | grep -v "lo" | awk '{print $2}' | cut -d':' -f1 | cut -d'@' -f1 | awk 'NR==1{print}')
+loc_ip=$(ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:")
 
-cat > /etc/resolv.conf << EOF
-nameserver 119.29.29.29
-nameserver 119.28.28.28
-nameserver 223.5.5.5
-nameserver 223.6.6.6
+echo "" > /etc/pihole/adlists.list
+
+cat > /etc/pihole/setupVars.conf << EOF
+PIHOLE_INTERFACE=$lan_n
+IPV4_ADDRESS=$loc_ip/24
+QUERY_LOGGING=false
+INSTALL_WEB_SERVER=true
+INSTALL_WEB_INTERFACE=true
+LIGHTTPD_ENABLED=true
+BLOCKING_ENABLED=true
+WEBPASSWORD=$pi_wd
+DNSMASQ_LISTENING=single
+PIHOLE_DNS_1=127.0.0.1#5599
+DNS_FQDN_REQUIRED=true
+DNS_BOGUS_PRIV=true
+DNSSEC=false
+CONDITIONAL_FORWARDING=false
 EOF
 
-pihole restartdns > /dev/null 2>&1
+cd ~
+
+git clone --depth 1 https://github.com/pi-hole/pi-hole.git Pi-hole
+bash ~/Pi-hole/"automated install"/basic-install.sh /dev/stdin --unattended
+rm -rf ~/Pi-hole
+
+systemctl mask --now dhcpcd > /dev/null 2>&1
+systemctl daemon-reload > /dev/null 2>&1
+
+systemctl restart pihole-FTL
+pihole -f
+
+cat > /etc/resolvconf/resolv.conf.d/base << EOF
+nameserver 114.114.114.114
+EOF
+
 	green " ===========================请重启debian系统=============================="
 	green " SmartPi安装完成"
     green " 系统：>=debian9"
     green " Youtube：米月"
     green " 电报群：https://t.me/mi_yue"
     green " Youtube频道地址：https://www.youtube.com/channel/UCr4HCEgaZ0cN5_7tLHS_xAg"
+	green " SmartPi后台地址：http://$loc_ip/admin"
 	green " ===========================请重启debian系统=============================="
 
 }
@@ -166,6 +182,7 @@ start_menu(){
     green " Youtube：米月"
     green " 电报群：https://t.me/mi_yue"
     green " Youtube频道地址：https://www.youtube.com/channel/UCr4HCEgaZ0cN5_7tLHS_xAg"
+	green " SmartPi版本：20200107v4"
     green " ========================================================================"
     echo
     green  " 1. 一键安装SmartPi"
