@@ -22,8 +22,17 @@ byellow(){
 
 
 function install_smartpi(){
+
+rm -rf /etc/resolv.conf
+cat > /etc/resolv.conf << EOF
+nameserver 119.29.29.29
+nameserver 223.5.5.5
+nameserver 119.28.28.28
+nameserver 223.6.6.6
+EOF
+
 apt update && apt upgrade -y
-apt install --no-install-recommends --no-install-suggests -y git net-tools curl
+apt install --no-install-recommends --no-install-suggests -y git net-tools curl resolvconf
 source /etc/profile
 
 wget https://github.com/pymumu/smartdns/releases/download/Release28/smartdns.1.2019.12.15-1028.x86_64-linux-all.tar.gz
@@ -102,7 +111,7 @@ systemctl daemon-reload > /dev/null 2>&1
 systemctl restart pihole-FTL
 pihole -f
 
-cat > cat /etc/resolvconf/resolv.conf.d/base << EOF
+cat > /etc/resolvconf/resolv.conf.d/base << EOF
 nameserver 114.114.114.114
 EOF
 
@@ -173,7 +182,7 @@ start_menu(){
     green " Youtube：米月"
     green " 电报群：https://t.me/mi_yue"
     green " Youtube频道地址：https://www.youtube.com/channel/UCr4HCEgaZ0cN5_7tLHS_xAg"
-	green " SmartPi版本：20200107v3"
+	green " SmartPi版本：20200107v4"
     green " ========================================================================"
     echo
     green  " 1. 一键安装SmartPi"
