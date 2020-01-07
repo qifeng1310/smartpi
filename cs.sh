@@ -90,6 +90,8 @@ DNSSEC=false
 CONDITIONAL_FORWARDING=false
 EOF
 
+cd ~
+
 git clone --depth 1 https://github.com/pi-hole/pi-hole.git Pi-hole
 bash ~/Pi-hole/"automated install"/basic-install.sh /dev/stdin --unattended
 rm -rf ~/Pi-hole
@@ -167,7 +169,7 @@ start_menu(){
     green " Youtube：米月"
     green " 电报群：https://t.me/mi_yue"
     green " Youtube频道地址：https://www.youtube.com/channel/UCr4HCEgaZ0cN5_7tLHS_xAg"
-	green " SmartPi版本：20200107v1"
+	green " SmartPi版本：20200107v2"
     green " ========================================================================"
     echo
     green  " 1. 一键安装SmartPi"
