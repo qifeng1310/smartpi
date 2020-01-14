@@ -58,13 +58,11 @@ log-file /var/log/smartdns.log
 log-size 128k
 log-num 2
 
-server 202.141.162.123
-server 202.141.176.93
-server-tcp 202.141.162.123
-server-tcp 202.141.176.93
+server 223.5.5.5
+server 119.28.28.28
+server-tcp 223.5.5.5
+server-tcp 119.28.28.28
 server-tcp 114.114.114.114
-server-tls 8.8.8.8
-server-tls 8.8.4.4
 
 EOF
 
@@ -111,9 +109,16 @@ systemctl daemon-reload > /dev/null 2>&1
 systemctl restart pihole-FTL
 pihole -f
 
+rm -rf /etc/resolv.conf
+cat > /etc/resolv.conf << EOF
+nameserver 114.114.114.114
+EOF
+
 cat > /etc/resolvconf/resolv.conf.d/base << EOF
 nameserver 114.114.114.114
 EOF
+
+
 
 	green " ===========================请重启debian系统=============================="
 	green " SmartPi安装完成"
