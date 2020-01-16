@@ -23,14 +23,6 @@ byellow(){
 
 function install_smartpi(){
 
-rm -rf /etc/resolv.conf
-cat > /etc/resolv.conf << EOF
-nameserver 119.29.29.29
-nameserver 223.5.5.5
-nameserver 119.28.28.28
-nameserver 223.6.6.6
-EOF
-
 apt update && apt upgrade -y
 apt install --no-install-recommends --no-install-suggests -y git net-tools curl resolvconf
 source /etc/profile
@@ -41,7 +33,7 @@ cd smartdns
 chmod +x ./install
 ./install -i
 rm -rf /etc/smartdns/smartdns.conf
-cat > /etc/smartdns/smartdns.conf <<-EOF
+cat > /etc/smartdns/smartdns.conf << EOF
 
 bind [::]:5599
 
@@ -60,6 +52,7 @@ log-num 2
 
 server 223.5.5.5
 server 119.28.28.28
+server 114.114.114.114
 server-tcp 223.5.5.5
 server-tcp 119.28.28.28
 server-tcp 114.114.114.114
