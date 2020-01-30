@@ -35,37 +35,17 @@ read gate_ip
 
 eth_n=$(ip --oneline link show up | grep -v "lo" | awk '{print$2;exit}' | cut -d':' -f1 | cut -d'@' -f1)
 
-if [[ $(lsb_release -cs) == buster ]]; then
-cat << EOF > /etc/apt/sources.list
-deb http://mirrors.aliyun.com/debian/ buster main non-free contrib
-deb-src http://mirrors.aliyun.com/debian/ buster main non-free contrib
-deb http://mirrors.aliyun.com/debian-security buster/updates main
-deb-src http://mirrors.aliyun.com/debian-security buster/updates main
-deb http://mirrors.aliyun.com/debian/ buster-updates main non-free contrib
-deb-src http://mirrors.aliyun.com/debian/ buster-updates main non-free contrib
-deb http://mirrors.aliyun.com/debian/ buster-backports main non-free contrib
-deb-src http://mirrors.aliyun.com/debian/ buster-backports main non-free contrib
+cat > /etc/apt/sources.list << EOF
+deb http://mirrors.aliyun.com/debian $(cat /etc/os-release | grep VERSION= | cut -d '(' -f2 | cut -d ')' -f1) main
+deb http://mirrors.aliyun.com/debian-security $(cat /etc/os-release | grep VERSION= | cut -d '(' -f2 | cut -d ')' -f1)/updates main
+deb http://mirrors.aliyun.com/debian $(cat /etc/os-release | grep VERSION= | cut -d '(' -f2 | cut -d ')' -f1)-updates main
 EOF
-fi
 
-if [[ $(lsb_release -cs) == stretch ]]; then
-cat << EOF > /etc/apt/sources.list
-deb http://mirrors.aliyun.com/debian stretch main contrib non-free
-deb http://mirrors.aliyun.com/debian stretch-proposed-updates main contrib non-free
-deb http://mirrors.aliyun.com/debian stretch-updates main contrib non-free
-
-deb-src http://mirrors.aliyun.com/debian stretch main contrib non-free
-deb-src http://mirrors.aliyun.com/debian stretch-proposed-updates main contrib non-free
-deb-src http://mirrors.aliyun.com/debian stretch-updates main contrib non-free
-
-deb http://mirrors.aliyun.com/debian-security/ stretch/updates main non-free contrib
-deb-src http://mirrors.aliyun.com/debian-security/ stretch/updates main non-free contrib
-EOF
-fi
-
+rm -rf /etc/apt/sources.list.d/unstable.list
+rm -rf /etc/apt/preferences.d/limit-unstable
 
 apt update && apt upgrade -y
-apt install --no-install-recommends --no-install-suggests -y git net-tools curl
+apt install --no-install-recommends --no-install-suggests -y sudo git net-tools dnsutils curl
 source /etc/profile
 
 wget https://github.com/pymumu/smartdns/releases/download/Release28/smartdns.1.2019.12.15-1028.x86_64-linux-all.tar.gz
@@ -169,6 +149,16 @@ iface $eth_n inet static
 EOF
 
 cat << EOF > /etc/resolv.conf
+nameserver 114.114.114.114
+EOF
+
+apt install --no-install-recommends --no-install-suggests -y resolvconf
+
+cat << EOF > /etc/resolvconf/resolv.conf.d/base
+nameserver 114.114.114.114
+EOF
+
+cat << EOF > /etc/resolvconf/resolv.conf.d/original
 nameserver 114.114.114.114
 EOF
 
