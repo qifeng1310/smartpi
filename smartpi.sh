@@ -56,9 +56,6 @@ server 114.114.114.114
 server-tcp 223.5.5.5
 server-tcp 119.28.28.28
 server-tcp 114.114.114.114
-https://dns.quad9.net/dns-query
-https://dns.cloudflare.com/dns-query
-https://dns.rubyfish.cn/dns-query
 
 EOF
 
